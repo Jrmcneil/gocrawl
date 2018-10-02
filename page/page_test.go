@@ -7,9 +7,8 @@ import (
 func TestPage(t *testing.T) {
 	const htmlString = `
         <a href="https://www.monzo.com/accounts"</a>
-        <a href="monzo.com/support"</a>
 		<a href="http://monzo.com/advice"</a>
-		<a href="http://www.monzo.com/banking/loans"</a>
+		<a href="http://www.monzo.com/banking/loans.php"</a>
 		<a href="http://www.monzo.com/"</a>
 		<a href="https://www.monzo.com/contact/london" </a>
 	`
@@ -19,12 +18,11 @@ func TestPage(t *testing.T) {
 		page := NewPage("monzo.com", htmlString)
 
 		expected := map[string]bool{
-			"/accounts":       true,
-			"/support":        true,
-			"/advice":         true,
-			"/banking/loans":  true,
-			"/contact/london": true,
-			"/":               true}
+			"/accounts":          true,
+			"/advice":            true,
+			"/banking/loans.php": true,
+			"/contact/london":    true,
+			"/":                  true}
 
 		for _, link := range page.links {
 			if expected[link] != true {
@@ -41,12 +39,11 @@ func TestPage(t *testing.T) {
 		page := NewPage("https://www.monzo.com/contact/london/", htmlString)
 
 		expected := map[string]bool{
-			"/accounts":       true,
-			"/support":        true,
-			"/advice":         true,
-			"/banking/loans":  true,
-			"/contact/london": true,
-			"/":               true}
+			"/accounts":          true,
+			"/advice":            true,
+			"/banking/loans.php": true,
+			"/contact/london":    true,
+			"/":                  true}
 
 		for _, link := range page.links {
 			if expected[link] != true {

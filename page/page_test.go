@@ -13,11 +13,11 @@ func TestPage(t *testing.T) {
 		<a href="https://www.monzo.com/contact/london" </a>
 	`
 
-	assertCorrectLinks := func(t *testing.T, links []string, expected map[string]bool) {
+	assertCorrectLinks := func(t *testing.T, links []*Page, expected map[string]bool) {
 		t.Helper()
 		for _, link := range links {
-			if expected[link] != true {
-				t.Errorf("'%s' was not expected in links", link)
+			if expected[link.address] != true {
+				t.Errorf("'%s' was not expected in links", link.address)
 			}
 		}
 
@@ -32,11 +32,11 @@ func TestPage(t *testing.T) {
 		page.ParseLinks(htmlString)
 
 		expected := map[string]bool{
-			"/accounts":          true,
-			"/advice":            true,
-			"/banking/loans.php": true,
-			"/contact/london":    true,
-			"/":                  true}
+			"monzo.com/accounts":          true,
+			"monzo.com/advice":            true,
+			"monzo.com/banking/loans.php": true,
+			"monzo.com/contact/london":    true,
+			"monzo.com/":                  true}
 
 		assertCorrectLinks(t, page.links, expected)
 	})
@@ -46,11 +46,11 @@ func TestPage(t *testing.T) {
 		page.ParseLinks(htmlString)
 
 		expected := map[string]bool{
-			"/accounts":          true,
-			"/advice":            true,
-			"/banking/loans.php": true,
-			"/contact/london":    true,
-			"/":                  true}
+			"monzo.com/accounts":          true,
+			"monzo.com/advice":            true,
+			"monzo.com/banking/loans.php": true,
+			"monzo.com/contact/london":    true,
+			"monzo.com/":                  true}
 
 		assertCorrectLinks(t, page.links, expected)
 	})

@@ -12,7 +12,7 @@ func TestPage(t *testing.T) {
 		<a href="http://www.monzo.com/banking/loans"</a>
 	`
 
-	t.Run("New Page extracts links from html string", func(t *testing.T) {
+	t.Run("New Page extracts links from html string using domain as address", func(t *testing.T) {
 
 		page := NewPage("monzo.com", htmlString)
 
@@ -29,12 +29,12 @@ func TestPage(t *testing.T) {
 		}
 
 		if len(page.links) != len(expected) {
-			t.Errorf("expected %d links got %d ", 2, len(page.links))
+			t.Errorf("expected %d links got %d ", len(expected), len(page.links))
 		}
 	})
 
-	t.Run("Passing a URL matches links where only domain is specified", func(t *testing.T) {
-		page := NewPage("https://www.monzo.com", htmlString)
+	t.Run("New Page extracts links from html string using URL as address", func(t *testing.T) {
+		page := NewPage("https://www.monzo.com/contact/london/", htmlString)
 
 		expected := map[string]bool{
 			"/accounts":      true,
@@ -49,7 +49,7 @@ func TestPage(t *testing.T) {
 		}
 
 		if len(page.links) != len(expected) {
-			t.Errorf("expected %d links got %d ", 2, len(page.links))
+			t.Errorf("expected %d links got %d ", len(expected), len(page.links))
 		}
 	})
 

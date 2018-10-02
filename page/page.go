@@ -21,7 +21,7 @@ func parseLinks(domain string, html string) []string {
 }
 
 func stripURL(address string) string {
-	regex := regexp.MustCompile(`(?:http://|https://|)(?:.+\.|)(.+\..+)`)
+	regex := regexp.MustCompile(`(?:http://|https://|)(?:.+\.|)(.+\.[^/]+)\/?.*`)
 	match := regex.FindStringSubmatch(address)
 	return match[1]
 }

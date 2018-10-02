@@ -4,11 +4,11 @@ import "regexp"
 
 type Page struct {
 	address string
-	links  []string
+	links   []string
 }
 
 func (page *Page) ParseLinks(html string) {
-    domain := stripURL(page.address)
+	domain := stripURL(page.address)
 	escapedDomain := regexp.QuoteMeta(domain)
 	regex := regexp.MustCompile(`<a[ ]+href=\".*` + escapedDomain + `(/.*)\".*</a>`)
 	matches := regex.FindAllStringSubmatch(html, -1)

@@ -13,6 +13,19 @@ func TestPage(t *testing.T) {
 		<a href="https://www.monzo.com/contact/london" </a>
 	`
 
+	assertCorrectLinks := func(t *testing.T, links []string, expected map[string]bool) {
+		t.Helper()
+		for _, link := range links {
+			if expected[link] != true {
+				t.Errorf("'%s' was not expected in links", link)
+			}
+		}
+
+		if len(links) != len(expected) {
+			t.Errorf("expected %d links got %d ", len(expected), len(links))
+		}
+	}
+
 	t.Run("New Page extracts links from html string using domain as address", func(t *testing.T) {
 
 		page := NewPage("monzo.com")
@@ -25,15 +38,7 @@ func TestPage(t *testing.T) {
 			"/contact/london":    true,
 			"/":                  true}
 
-		for _, link := range page.links {
-			if expected[link] != true {
-				t.Errorf("'%s' was not expected in links", link)
-			}
-		}
-
-		if len(page.links) != len(expected) {
-			t.Errorf("expected %d links got %d ", len(expected), len(page.links))
-		}
+		assertCorrectLinks(t, page.links, expected)
 	})
 
 	t.Run("New Page extracts links from html string using URL as address", func(t *testing.T) {
@@ -47,15 +52,7 @@ func TestPage(t *testing.T) {
 			"/contact/london":    true,
 			"/":                  true}
 
-		for _, link := range page.links {
-			if expected[link] != true {
-				t.Errorf("'%s' was not expected in links", link)
-			}
-		}
-
-		if len(page.links) != len(expected) {
-			t.Errorf("expected %d links got %d ", len(expected), len(page.links))
-		}
+		assertCorrectLinks(t, page.links, expected)
 	})
 
 }

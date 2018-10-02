@@ -7,9 +7,10 @@ import (
 func TestPage(t *testing.T) {
 	const htmlString = `
         <a href="https://www.monzo.com/accounts"</a>
-		<a href="http://monzo.com/advice"</a>
+		<a href="http://monzo.co.uk/advice"</a>
 		<a href="http://www.monzo.com/banking/loans.php"</a>
 		<a href="http://www.monzo.com/"</a>
+        <a href="www.monzo.co.uk/"</a>
 		<a href="https://www.monzo.com/contact/london" </a>
 	`
 
@@ -28,15 +29,12 @@ func TestPage(t *testing.T) {
 
 	t.Run("New Page extracts links from html string using domain as address", func(t *testing.T) {
 
-		page := NewPage("monzo.com")
+		page := NewPage("monzo.co.uk")
 		page.ParseLinks(htmlString)
 
 		expected := map[string]bool{
-			"monzo.com/accounts":          true,
-			"monzo.com/advice":            true,
-			"monzo.com/banking/loans.php": true,
-			"monzo.com/contact/london":    true,
-			"monzo.com/":                  true}
+			"monzo.co.uk/advice": true,
+			"monzo.co.uk/":       true}
 
 		assertCorrectLinks(t, page.links, expected)
 	})
@@ -46,11 +44,10 @@ func TestPage(t *testing.T) {
 		page.ParseLinks(htmlString)
 
 		expected := map[string]bool{
-			"monzo.com/accounts":          true,
-			"monzo.com/advice":            true,
-			"monzo.com/banking/loans.php": true,
-			"monzo.com/contact/london":    true,
-			"monzo.com/":                  true}
+			"www.monzo.com/accounts":          true,
+			"www.monzo.com/banking/loans.php": true,
+			"www.monzo.com/contact/london":    true,
+			"www.monzo.com/":                  true}
 
 		assertCorrectLinks(t, page.links, expected)
 	})

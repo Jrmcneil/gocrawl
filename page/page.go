@@ -3,12 +3,12 @@ package page
 import "regexp"
 
 type Page struct {
-	domain string
-	html   string
+	address string
 	links  []string
 }
 
-func parseLinks(domain string, html string) []string {
+func (page *Page) ParseLinks(html string) {
+    domain := stripURL(page.address)
 	escapedDomain := regexp.QuoteMeta(domain)
 	regex := regexp.MustCompile(`<a[ ]+href=\".*` + escapedDomain + `(/.*)\".*</a>`)
 	matches := regex.FindAllStringSubmatch(html, -1)
@@ -17,7 +17,7 @@ func parseLinks(domain string, html string) []string {
 		links[index] = match[1]
 	}
 
-	return links
+	page.links = links
 }
 
 func stripURL(address string) string {
@@ -26,10 +26,6 @@ func stripURL(address string) string {
 	return match[1]
 }
 
-func NewPage(address string, html string) *Page {
-	page := new(Page)
-	page.html = html
-	page.domain = stripURL(address)
-	page.links = parseLinks(page.domain, html)
-	return page
+func NewPage(address string) *Page {
+	return &Page{address: address}
 }

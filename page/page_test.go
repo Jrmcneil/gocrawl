@@ -15,7 +15,8 @@ func TestPage(t *testing.T) {
 
 	t.Run("New Page extracts links from html string using domain as address", func(t *testing.T) {
 
-		page := NewPage("monzo.com", htmlString)
+		page := NewPage("monzo.com")
+		page.ParseLinks(htmlString)
 
 		expected := map[string]bool{
 			"/accounts":          true,
@@ -36,7 +37,8 @@ func TestPage(t *testing.T) {
 	})
 
 	t.Run("New Page extracts links from html string using URL as address", func(t *testing.T) {
-		page := NewPage("https://www.monzo.com/contact/london/", htmlString)
+		page := NewPage("https://www.monzo.com/contact/london/")
+		page.ParseLinks(htmlString)
 
 		expected := map[string]bool{
 			"/accounts":          true,

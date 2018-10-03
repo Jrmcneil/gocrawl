@@ -19,7 +19,7 @@ func (page *Page) Links() []*Page {
 	return page.links
 }
 
-func (page *Page) ParseLinks(html string) {
+func (page *Page) Build(html string) {
 	matches := findMatches(page.address, html)
 	page.links = setLinks(stripURL(page.address), matches)
 	page.watchLinks()

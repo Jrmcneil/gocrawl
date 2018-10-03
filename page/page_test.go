@@ -30,7 +30,7 @@ func TestPage(t *testing.T) {
 	t.Run("New Page extracts links from html string using domain as address", func(t *testing.T) {
 
 		page := NewPage("monzo.co.uk")
-		page.ParseLinks(htmlString)
+		page.Build(htmlString)
 
 		expected := map[string]bool{
 			"monzo.co.uk/advice": true,
@@ -41,7 +41,7 @@ func TestPage(t *testing.T) {
 
 	t.Run("New Page extracts links from html string using URL as address", func(t *testing.T) {
 		page := NewPage("https://www.monzo.com/contact/london/")
-		page.ParseLinks(htmlString)
+		page.Build(htmlString)
 
 		expected := map[string]bool{
 			"www.monzo.com/accounts":          true,
@@ -54,7 +54,7 @@ func TestPage(t *testing.T) {
 
     t.Run("Pages are not closed by default", func(t *testing.T) {
         page := NewPage("https://www.monzo.com/contact/london/")
-        page.ParseLinks(htmlString)
+        page.Build(htmlString)
 
         done := len(page.Done) != 0
 
@@ -65,7 +65,7 @@ func TestPage(t *testing.T) {
 
 	t.Run("Page closes once its links are closed", func(t *testing.T) {
 		page := NewPage("https://www.monzo.com/contact/london/")
-		page.ParseLinks(htmlString)
+		page.Build(htmlString)
 
 		for _, link := range page.links {
 			link.Close()

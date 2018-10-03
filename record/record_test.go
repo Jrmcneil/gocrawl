@@ -1,4 +1,4 @@
-package page
+package record
 
 import (
 	"gocrawl/job"
@@ -11,7 +11,7 @@ func TestRecord(t *testing.T) {
 		out := make(chan job.Job)
 		quit := make(chan bool, 1)
 		record := NewRecord(in, out, quit)
-		page := NewPage("www.monzo.com")
+        page := &TestJob{calls: make(map[string]int, 4), address: "www.monzo.com"}
 
 		record.Start()
 		in <- page
@@ -27,7 +27,7 @@ func TestRecord(t *testing.T) {
 		out := make(chan job.Job)
 		quit := make(chan bool, 1)
 		record := NewRecord(in, out, quit)
-		page := NewPage("www.monzo.com")
+        page := &TestJob{calls: make(map[string]int, 4), address: "www.monzo.com"}
 
 		record.Start()
 		go func() {
@@ -47,8 +47,8 @@ func TestRecord(t *testing.T) {
 		out := make(chan job.Job)
 		quit := make(chan bool, 1)
 		record := NewRecord(in, out, quit)
-		page1 := NewPage("www.monzo.com")
-		page2 := NewPage("www.monzo.com/contact")
+        page1 := &TestJob{calls: make(map[string]int, 4), address: "www.monzo.com"}
+        page2 := &TestJob{calls: make(map[string]int, 4), address:"www.monzo.com/contact"}
 
 		record.Start()
 		go func() {
@@ -64,4 +64,36 @@ func TestRecord(t *testing.T) {
 			t.Errorf("got: %d, want: %d", len(record.record), 2)
 		}
 	})
+}
+
+type TestJob struct {
+	links []job.Job
+	calls map[string]int
+	args  []string
+	address string
+	done chan bool
+}
+
+func (job *TestJob) Address() string {
+	job.calls["Address"] = job.calls["Address"] + 1
+	return job.address
+}
+
+func (job *TestJob) Close() {
+	job.calls["Close"] = job.calls["Close"] + 1
+}
+
+func (job *TestJob) Build(str string) {
+	job.args = append(job.args, str)
+	job.calls["Build"] = job.calls["Build"] + 1
+}
+
+func (job *TestJob) Links() []job.Job {
+	job.calls["Links"] = job.calls["Links"] + 1
+	return job.links
+}
+
+func (job *TestJob) Done() chan bool {
+	job.calls["Done"] = job.calls["Done"] + 1
+	return job.done
 }

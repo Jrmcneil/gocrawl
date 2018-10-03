@@ -1,21 +1,26 @@
 package page
 
 import (
+	"gocrawl/job"
 	"regexp"
 	"sync"
 )
 
 type Page struct {
 	address string
-	links   []*Page
-	Done    chan bool
+	links   []job.Job
+	done    chan bool
+}
+
+func (page *Page) Done() chan bool {
+	return page.done
 }
 
 func (page *Page) Address() string {
 	return page.address
 }
 
-func (page *Page) Links() []*Page {
+func (page *Page) Links() []job.Job {
 	return page.links
 }
 
@@ -26,7 +31,7 @@ func (page *Page) Build(html string) {
 }
 
 func (page *Page) Close() {
-    page.Done <- true
+	page.done <- true
 }
 
 func (page *Page) watchLinks() {
@@ -34,7 +39,7 @@ func (page *Page) watchLinks() {
 		var wg sync.WaitGroup
 		wg.Add(len(page.links))
 		for _, link := range page.links {
-			<-link.Done
+			<-link.Done()
 			wg.Done()
 		}
 		wg.Wait()
@@ -42,8 +47,8 @@ func (page *Page) watchLinks() {
 	}(page)
 }
 
-func setLinks(domain string, matches [][]string) []*Page {
-	links := make([]*Page, len(matches))
+func setLinks(domain string, matches [][]string) []job.Job {
+	links := make([]job.Job, len(matches))
 	for index, match := range matches {
 		links[index] = NewPage(domain + match[1])
 	}
@@ -69,6 +74,6 @@ func stripURL(address string) string {
 func NewPage(address string) *Page {
 	page := new(Page)
 	page.address = address
-	page.Done = make(chan bool, 1)
+	page.done = make(chan bool, 1)
 	return page
 }

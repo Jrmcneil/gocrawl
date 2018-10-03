@@ -2,15 +2,15 @@ package page
 
 import "testing"
 
-func TestSync(t *testing.T) {
+func TestRecord(t *testing.T) {
     t.Run("Passes a new page to the output channel", func(t *testing.T) {
        in := make(chan *Page)
        out := make(chan *Page)
        quit := make(chan bool, 1)
-       sync := NewSync(in, out, quit)
+       record := NewRecord(in, out, quit)
        page := NewPage("www.monzo.com")
 
-       sync.Start()
+       record.Start()
        in <- page
        savedPage := <- out
 
@@ -23,10 +23,10 @@ func TestSync(t *testing.T) {
         in := make(chan *Page)
         out := make(chan *Page)
         quit := make(chan bool, 1)
-        sync := NewSync(in, out, quit)
+        record := NewRecord(in, out, quit)
         page := NewPage("www.monzo.com")
 
-        sync.Start()
+        record.Start()
         go func() {
             in <- page
             in <- page
@@ -44,11 +44,11 @@ func TestSync(t *testing.T) {
         in := make(chan *Page)
         out := make(chan *Page)
         quit := make(chan bool, 1)
-        sync := NewSync(in, out, quit)
+        record := NewRecord(in, out, quit)
         page1 := NewPage("www.monzo.com")
         page2 := NewPage("www.monzo.com/contact")
 
-        sync.Start()
+        record.Start()
         go func() {
             in <- page1
             in <- page1
@@ -58,8 +58,8 @@ func TestSync(t *testing.T) {
         <- out
         <- out
 
-        if len(sync.record) != 2 {
-            t.Errorf("got: %d, want: %d", len(sync.record), 2)
+        if len(record.record) != 2 {
+            t.Errorf("got: %d, want: %d", len(record.record), 2)
         }
     })
 }

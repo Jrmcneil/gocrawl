@@ -1,9 +1,9 @@
 package page
 
 import (
-	"gocrawl/job"
-	"regexp"
-	"sync"
+    "gocrawl/job"
+    "regexp"
+    "sync"
 )
 
 type Page struct {
@@ -62,7 +62,7 @@ func setLinks(domain string, matches [][]string) []job.Job {
 }
 
 func findMatches(address string, html string) [][]string {
-	regex := regexp.MustCompile(`<a[ ]+href=\".*` + escapedDomain(address) + `(/.*)\".*</a>`)
+	regex := regexp.MustCompile(`<a[ ]+.*href=\".*` + escapedDomain(address) + `(\/.*)\".*<\/a>`)
 	return regex.FindAllStringSubmatch(html, -1)
 }
 
@@ -82,5 +82,5 @@ func NewPage(address string) *Page {
 	page.address = address
 	page.ready = make(chan bool, 1)
 	page.done = make(chan bool, 1)
-	return page
+    return page
 }

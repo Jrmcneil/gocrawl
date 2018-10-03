@@ -1,16 +1,15 @@
 package worker
 
-import "gocrawl/job"
+import (
+    "gocrawl/client"
+    "gocrawl/job"
+)
 
 type Worker struct {
-	client  HttpClient
-	queue   <-chan job.Job
-	record  chan<- job.Job
-	quit    chan bool
-}
-
-type HttpClient interface {
-	Get(address string) (string, error)
+	client client.HttpClient
+	queue  <-chan job.Job
+	record chan<- job.Job
+	quit   chan bool
 }
 
 func (worker *Worker) Start() {
@@ -39,7 +38,7 @@ func (worker *Worker) send(links []job.Job) {
 	}
 }
 
-func NewWorker(queue <-chan job.Job, record chan<- job.Job, client HttpClient) *Worker {
+func NewWorker(queue <-chan job.Job, record chan<- job.Job, client client.HttpClient) *Worker {
 	worker := new(Worker)
 	worker.client = client
 	worker.queue = queue

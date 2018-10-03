@@ -35,3 +35,10 @@ func NewClient() *Client {
 
     return httpClient
 }
+
+type HttpClientBuilder func() HttpClient
+
+type HttpClient interface {
+    Get(address string) (string, error)
+}
+

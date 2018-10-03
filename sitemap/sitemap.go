@@ -14,12 +14,12 @@ func (sitemap *Sitemap) Build(root job.Job) {
         var sb strings.Builder
         var indentSb strings.Builder
         indentSb.WriteString("")
-        buildMap(root, sb, indentSb, true)
+        buildMap(root, &sb, &indentSb, true)
         sitemap.Result <- sb.String()
     } ()
 }
 
-func buildMap(node job.Job, sb strings.Builder, indentSb strings.Builder, last bool) {
+func buildMap(node job.Job, sb *strings.Builder, indentSb *strings.Builder, last bool) {
     sb.WriteString(indentSb.String())
 
     if last {

@@ -3,7 +3,7 @@ package page
 type Record struct {
 	record map[string]bool
 	out    chan *Page
-	in     chan *Page
+	In     chan *Page
 	quit   chan bool
 }
 
@@ -17,11 +17,11 @@ func (record *Record) Start() {
 	go func() {
 		for {
 			select {
-			case page := <-record.in:
+			case page := <-record.In:
 				if record.newRecord(page) {
 					record.out <- page
 				} else {
-					page.done <- true
+					page.Done <- true
 				}
 
 			case <-record.quit:
@@ -33,7 +33,7 @@ func (record *Record) Start() {
 
 func NewRecord(in chan *Page, out chan *Page, quit chan bool) *Record {
 	return &Record{
-		in:     in,
+		In:     in,
 		out:    out,
 		quit:   quit,
 		record: make(map[string]bool),

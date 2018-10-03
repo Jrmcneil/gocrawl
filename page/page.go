@@ -8,7 +8,15 @@ import (
 type Page struct {
 	address string
 	links   []*Page
-	done    chan bool
+	Done    chan bool
+}
+
+func (page *Page) Address() string {
+	return page.address
+}
+
+func (page *Page) Links() []*Page {
+	return page.links
 }
 
 func (page *Page) ParseLinks(html string) {
@@ -22,11 +30,11 @@ func (page *Page) watchLinks() {
 		var wg sync.WaitGroup
 		wg.Add(len(page.links))
 		for _, link := range page.links {
-			<-link.done
+			<-link.Done
 			wg.Done()
 		}
 		wg.Wait()
-		page.done <- true
+		page.Done <- true
 	}(page)
 }
 
@@ -57,6 +65,6 @@ func stripURL(address string) string {
 func NewPage(address string) *Page {
 	page := new(Page)
 	page.address = address
-	page.done = make(chan bool, 1)
+	page.Done = make(chan bool, 1)
 	return page
 }

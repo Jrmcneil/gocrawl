@@ -57,14 +57,14 @@ func TestPage(t *testing.T) {
 		page.ParseLinks(htmlString)
 
 		for _, link := range page.links {
-			if len(page.done) != 0 {
-				t.Errorf("got: %d, want: %d", len(page.done), 0)
+			if len(page.Done) != 0 {
+				t.Errorf("got: %d, want: %d", len(page.Done), 0)
 			}
 
-			link.done <- true
+			link.Done <- true
 		}
 
-		done := <-page.done
+		done := <-page.Done
 		if done != true {
 			t.Errorf("got: %t, want: %t", done, true)
 		}

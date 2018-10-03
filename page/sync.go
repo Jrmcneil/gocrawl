@@ -20,7 +20,9 @@ func (sync *Sync) Start() {
 			case page := <-sync.in:
 				if sync.newRecord(page) {
 					sync.out <- page
-				}
+				} else {
+				    page.done <- true
+                }
 
 			case <-sync.quit:
 				return

@@ -21,7 +21,7 @@ func (record *Record) Start() {
 				if record.newRecord(page) {
 					record.out <- page
 				} else {
-					page.Done <- true
+					page.Close()
 				}
 
 			case <-record.quit:

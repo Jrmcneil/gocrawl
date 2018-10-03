@@ -25,6 +25,10 @@ func (page *Page) ParseLinks(html string) {
 	page.watchLinks()
 }
 
+func (page *Page) Close() {
+    page.Done <- true
+}
+
 func (page *Page) watchLinks() {
 	go func(page *Page) {
 		var wg sync.WaitGroup
@@ -34,7 +38,7 @@ func (page *Page) watchLinks() {
 			wg.Done()
 		}
 		wg.Wait()
-		page.Done <- true
+		page.Close()
 	}(page)
 }
 

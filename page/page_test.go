@@ -52,16 +52,23 @@ func TestPage(t *testing.T) {
 		assertCorrectLinks(t, page.links, expected)
 	})
 
-	t.Run("Page waits on links to be done to set its done channel", func(t *testing.T) {
+    t.Run("Pages are not closed by default", func(t *testing.T) {
+        page := NewPage("https://www.monzo.com/contact/london/")
+        page.ParseLinks(htmlString)
+
+        done := len(page.Done) != 0
+
+        if done != false {
+            t.Errorf("got: %t, want: %t", done, false)
+        }
+    })
+
+	t.Run("Page closes once its links are closed", func(t *testing.T) {
 		page := NewPage("https://www.monzo.com/contact/london/")
 		page.ParseLinks(htmlString)
 
 		for _, link := range page.links {
-			if len(page.Done) != 0 {
-				t.Errorf("got: %d, want: %d", len(page.Done), 0)
-			}
-
-			link.Done <- true
+			link.Close()
 		}
 
 		done := <-page.Done

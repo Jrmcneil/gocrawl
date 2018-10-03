@@ -1,15 +1,17 @@
 package page
 
+import "gocrawl/job"
+
 type Record struct {
 	record map[string]bool
-	out    chan *Page
-	In     chan *Page
+	Out    chan<- job.Job
+	In     <-chan job.Job
 	quit   chan bool
 }
 
-func (record *Record) newRecord(page *Page) bool {
-	defer func() { record.record[page.address] = true }()
-	_, found := record.record[page.address]
+func (record *Record) newRecord(page job.Job) bool {
+	defer func() { record.record[page.Address()] = true }()
+	_, found := record.record[page.Address()]
 	return !found
 }
 
@@ -19,7 +21,7 @@ func (record *Record) Start() {
 			select {
 			case page := <-record.In:
 				if record.newRecord(page) {
-					record.out <- page
+					record.Out <- page
 				} else {
 					page.Close()
 				}
@@ -31,10 +33,10 @@ func (record *Record) Start() {
 	}()
 }
 
-func NewRecord(in chan *Page, out chan *Page, quit chan bool) *Record {
+func NewRecord(in <-chan job.Job, out chan<- job.Job, quit chan bool) *Record {
 	return &Record{
 		In:     in,
-		out:    out,
+		Out:    out,
 		quit:   quit,
 		record: make(map[string]bool),
 	}

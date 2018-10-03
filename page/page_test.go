@@ -78,4 +78,14 @@ func TestPage(t *testing.T) {
 		}
 	})
 
+    t.Run("Page with no links closes immediately", func(t *testing.T) {
+        page := NewPage("https://www.monzo.com/contact/london/")
+        page.Build(``)
+
+        done := <-page.Done()
+        if done != true {
+            t.Errorf("got: %t, want: %t", done, true)
+        }
+    })
+
 }

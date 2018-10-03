@@ -61,6 +61,9 @@ func TestRecord(t *testing.T) {
 		if len(page2.Done()) != 0 {
 			t.Errorf("got: %d, want: %d", len(page2.Done()), 0)
 		}
+		if len(page2.Ready()) != 0 {
+			t.Errorf("got: %d, want: %d", len(page2.Done()), 0)
+		}
 	})
 
 	t.Run("Increases the record with each new page", func(t *testing.T) {

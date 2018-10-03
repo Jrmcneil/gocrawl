@@ -25,6 +25,7 @@ func (record *Record) Start() {
 				if record.newRecord(page) {
 					record.Out <- page
 				} else {
+					page.Ready() <- true
 					page.Close()
 				}
 

@@ -1,7 +1,7 @@
 package record
 
 import (
-    "gocrawl/job"
+	"gocrawl/job"
 )
 
 type Record struct {

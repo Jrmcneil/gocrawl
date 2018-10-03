@@ -1,8 +1,8 @@
 package worker
 
 import (
-    "gocrawl/client"
-    "gocrawl/job"
+	"gocrawl/client"
+	"gocrawl/job"
 )
 
 type Worker struct {

@@ -1,8 +1,8 @@
 package worker
 
 import (
-    "gocrawl/job"
-    "testing"
+	"gocrawl/job"
+	"testing"
 )
 
 func TestWorker(t *testing.T) {
@@ -16,7 +16,7 @@ func TestWorker(t *testing.T) {
 		worker := NewWorker(queue, record, client)
 
 		address := "www.monzo.com"
-        p := &TestJob{calls: make(map[string]int, 4)}
+		p := &TestJob{calls: make(map[string]int, 4)}
 		p.address = address
 
 		worker.Start()
@@ -39,11 +39,11 @@ func TestWorker(t *testing.T) {
 
 		worker := NewWorker(queue, record, client)
 
-        address := "www.monzo.com"
-        p := &TestJob{calls: make(map[string]int, 4)}
-        p.address = address
-        link := &TestJob{calls: make(map[string]int, 4)}
-        p.links = []job.Job{link}
+		address := "www.monzo.com"
+		p := &TestJob{calls: make(map[string]int, 4)}
+		p.address = address
+		link := &TestJob{calls: make(map[string]int, 4)}
+		p.links = []job.Job{link}
 
 		worker.Start()
 
@@ -64,12 +64,12 @@ func TestWorker(t *testing.T) {
 		worker := NewWorker(queue, record, client)
 
 		address := "www.monzo.com"
-        p := &TestJob{calls: make(map[string]int, 4)}
-        p.address = address
+		p := &TestJob{calls: make(map[string]int, 4)}
+		p.address = address
 
-        client.err = &TestError{}
+		client.err = &TestError{}
 
-        worker.Start()
+		worker.Start()
 		queue <- p
 
 		callsToClose := p.calls["Close"]
@@ -85,51 +85,56 @@ func TestWorker(t *testing.T) {
 }
 
 type TestClient struct {
-    calls int
-    args  []string
-    err   error
+	calls int
+	args  []string
+	err   error
 }
 
 func (client *TestClient) Get(address string) (string, error) {
-    client.calls++
-    client.args = append(client.args, address)
-    return address, client.err
+	client.calls++
+	client.args = append(client.args, address)
+	return address, client.err
 }
 
 type TestJob struct {
-    links []job.Job
-    calls map[string]int
-    args  []string
-    address string
-    done chan bool
+	links   []job.Job
+	calls   map[string]int
+	args    []string
+	address string
+	done    chan bool
 }
 
 func (job *TestJob) Address() string {
-    job.calls["Address"] = job.calls["Address"] + 1
-    return job.address
+	job.calls["Address"] = job.calls["Address"] + 1
+	return job.address
 }
 
 func (job *TestJob) Close() {
-    job.calls["Close"] = job.calls["Close"] + 1
+	job.calls["Close"] = job.calls["Close"] + 1
 }
 
 func (job *TestJob) Build(str string) {
-    job.args = append(job.args, str)
-    job.calls["Build"] = job.calls["Build"] + 1
+	job.args = append(job.args, str)
+	job.calls["Build"] = job.calls["Build"] + 1
 }
 
 func (job *TestJob) Links() []job.Job {
-    job.calls["Links"] = job.calls["Links"] + 1
-    return job.links
+	job.calls["Links"] = job.calls["Links"] + 1
+	return job.links
 }
 
 func (job *TestJob) Done() chan bool {
-    job.calls["Done"] = job.calls["Done"] + 1
-    return job.done
+	job.calls["Done"] = job.calls["Done"] + 1
+	return job.done
+}
+
+func (job *TestJob) Ready() chan bool {
+	job.calls["Ready"] = job.calls["Ready"] + 1
+	return make(chan bool, 1)
 }
 
 type TestError struct{}
 
 func (err *TestError) Error() string {
-    return "Test error"
+	return "Test error"
 }

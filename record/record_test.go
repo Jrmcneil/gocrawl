@@ -1,8 +1,8 @@
 package record
 
 import (
-    "gocrawl/job"
-    "testing"
+	"gocrawl/job"
+	"testing"
 )
 
 func TestRecord(t *testing.T) {
@@ -11,7 +11,7 @@ func TestRecord(t *testing.T) {
 		out := make(chan job.Job)
 		quit := make(chan bool, 1)
 		record := NewRecord(in, out, quit)
-        page := &TestJob{calls: make(map[string]int, 4), address: "www.monzo.com"}
+		page := &TestJob{calls: make(map[string]int, 4), address: "www.monzo.com"}
 
 		record.Start()
 		in <- page
@@ -27,7 +27,7 @@ func TestRecord(t *testing.T) {
 		out := make(chan job.Job)
 		quit := make(chan bool, 1)
 		record := NewRecord(in, out, quit)
-        page := &TestJob{calls: make(map[string]int, 4), address: "www.monzo.com"}
+		page := &TestJob{calls: make(map[string]int, 4), address: "www.monzo.com"}
 
 		record.Start()
 		go func() {
@@ -42,34 +42,34 @@ func TestRecord(t *testing.T) {
 		}
 	})
 
-    t.Run("Closes a visited page", func(t *testing.T) {
-        in := make(chan job.Job)
-        out := make(chan job.Job)
-        quit := make(chan bool, 1)
-        record := NewRecord(in, out, quit)
-        page1 := &TestJob{calls: make(map[string]int, 4), address: "www.monzo.com"}
-        page2 := &TestJob{calls: make(map[string]int, 4), address: "www.monzo.com"}
+	t.Run("Closes a visited page", func(t *testing.T) {
+		in := make(chan job.Job)
+		out := make(chan job.Job)
+		quit := make(chan bool, 1)
+		record := NewRecord(in, out, quit)
+		page1 := &TestJob{calls: make(map[string]int, 4), address: "www.monzo.com"}
+		page2 := &TestJob{calls: make(map[string]int, 4), address: "www.monzo.com"}
 
-        record.Start()
-        go func() {
-            in <- page1
-            in <- page2
-        }()
+		record.Start()
+		go func() {
+			in <- page1
+			in <- page2
+		}()
 
-        <-out
+		<-out
 
-        if len(page2.Done()) != 0 {
-            t.Errorf("got: %d, want: %d", len(page2.Done()), 0)
-        }
-    })
+		if len(page2.Done()) != 0 {
+			t.Errorf("got: %d, want: %d", len(page2.Done()), 0)
+		}
+	})
 
 	t.Run("Increases the record with each new page", func(t *testing.T) {
 		in := make(chan job.Job)
 		out := make(chan job.Job)
 		quit := make(chan bool, 1)
 		record := NewRecord(in, out, quit)
-        page1 := &TestJob{calls: make(map[string]int, 4), address: "www.monzo.com"}
-        page2 := &TestJob{calls: make(map[string]int, 4), address:"www.monzo.com/contact"}
+		page1 := &TestJob{calls: make(map[string]int, 4), address: "www.monzo.com"}
+		page2 := &TestJob{calls: make(map[string]int, 4), address: "www.monzo.com/contact"}
 
 		record.Start()
 		go func() {
@@ -88,11 +88,11 @@ func TestRecord(t *testing.T) {
 }
 
 type TestJob struct {
-	links []job.Job
-	calls map[string]int
-	args  []string
+	links   []job.Job
+	calls   map[string]int
+	args    []string
 	address string
-	done chan bool
+	done    chan bool
 }
 
 func (job *TestJob) Address() string {
@@ -117,4 +117,9 @@ func (job *TestJob) Links() []job.Job {
 func (job *TestJob) Done() chan bool {
 	job.calls["Done"] = job.calls["Done"] + 1
 	return job.done
+}
+
+func (job *TestJob) Ready() chan bool {
+	job.calls["Ready"] = job.calls["Ready"] + 1
+	return make(chan bool, 1)
 }

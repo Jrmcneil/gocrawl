@@ -1,15 +1,15 @@
 package page
 
 type Sync struct {
-	record map[*Page]bool
+	record map[string]bool
 	out    chan *Page
 	in     chan *Page
 	quit   chan bool
 }
 
 func (sync *Sync) newRecord(page *Page) bool {
-	defer func() { sync.record[page] = true }()
-	_, found := sync.record[page]
+	defer func() { sync.record[page.address] = true }()
+	_, found := sync.record[page.address]
 	return !found
 }
 
@@ -34,6 +34,6 @@ func NewSync(in chan *Page, out chan *Page, quit chan bool) *Sync {
 		in: in,
 		out: out,
 		quit: quit,
-		record: make(map[*Page]bool),
+		record: make(map[string]bool),
 	}
 }

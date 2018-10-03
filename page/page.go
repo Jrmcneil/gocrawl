@@ -10,6 +10,11 @@ type Page struct {
 	address string
 	links   []job.Job
 	done    chan bool
+	ready   chan bool
+}
+
+func (page *Page) Ready() chan bool {
+	return page.ready
 }
 
 func (page *Page) Done() chan bool {
@@ -27,6 +32,7 @@ func (page *Page) Links() []job.Job {
 func (page *Page) Build(html string) {
 	matches := findMatches(page.address, html)
 	page.links = setLinks(stripURL(page.address), matches)
+	page.ready <- true
 	page.watchLinks()
 }
 
@@ -74,6 +80,7 @@ func stripURL(address string) string {
 func NewPage(address string) *Page {
 	page := new(Page)
 	page.address = address
+	page.ready = make(chan bool, 1)
 	page.done = make(chan bool, 1)
 	return page
 }

@@ -28,7 +28,7 @@ func TestPage(t *testing.T) {
 		}
 	}
 
-	t.Run("New Page extracts links from html string using domain as address", func(t *testing.T) {
+	t.Run("Build extracts links from html string using domain as address", func(t *testing.T) {
 
 		page := NewPage("monzo.co.uk")
 		page.Build(htmlString)
@@ -40,7 +40,7 @@ func TestPage(t *testing.T) {
 		assertCorrectLinks(t, page.links, expected)
 	})
 
-	t.Run("New Page extracts links from html string using URL as address", func(t *testing.T) {
+	t.Run("Build extracts links from html string using URL as address", func(t *testing.T) {
 		page := NewPage("https://www.monzo.com/contact/london/")
 		page.Build(htmlString)
 
@@ -51,6 +51,23 @@ func TestPage(t *testing.T) {
 			"www.monzo.com/":                  true}
 
 		assertCorrectLinks(t, page.links, expected)
+	})
+
+	t.Run("Pages are not ready when created", func(t *testing.T) {
+		page := NewPage("https://www.monzo.com/contact/london/")
+
+		if len(page.Ready()) != 0 {
+			t.Errorf("got: %t, want: %t", len(page.Ready()), 0)
+		}
+	})
+
+	t.Run("Pages are ready when built", func(t *testing.T) {
+		page := NewPage("https://www.monzo.com/contact/london/")
+		page.Build(htmlString)
+
+		if len(page.Ready()) != 1 {
+			t.Errorf("got: %t, want: %t", len(page.Ready()), 1)
+		}
 	})
 
 	t.Run("Pages are not closed by default", func(t *testing.T) {
@@ -78,14 +95,14 @@ func TestPage(t *testing.T) {
 		}
 	})
 
-    t.Run("Page with no links closes immediately", func(t *testing.T) {
-        page := NewPage("https://www.monzo.com/contact/london/")
-        page.Build(``)
+	t.Run("Page with no links closes immediately", func(t *testing.T) {
+		page := NewPage("https://www.monzo.com/contact/london/")
+		page.Build(``)
 
-        done := <-page.Done()
-        if done != true {
-            t.Errorf("got: %t, want: %t", done, true)
-        }
-    })
+		done := <-page.Done()
+		if done != true {
+			t.Errorf("got: %t, want: %t", done, true)
+		}
+	})
 
 }

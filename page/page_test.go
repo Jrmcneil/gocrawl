@@ -52,22 +52,22 @@ func TestPage(t *testing.T) {
 		assertCorrectLinks(t, page.links, expected)
 	})
 
-    t.Run("Page waits on links to be done to set its done channel", func(t *testing.T) {
-        page := NewPage("https://www.monzo.com/contact/london/")
-        page.ParseLinks(htmlString)
+	t.Run("Page waits on links to be done to set its done channel", func(t *testing.T) {
+		page := NewPage("https://www.monzo.com/contact/london/")
+		page.ParseLinks(htmlString)
 
-        for _, link := range page.links {
-            if len(page.done) != 0 {
-                t.Errorf("got: %d, want: %d", len(page.done), 0)
-            }
+		for _, link := range page.links {
+			if len(page.done) != 0 {
+				t.Errorf("got: %d, want: %d", len(page.done), 0)
+			}
 
-            link.done <- true
-        }
+			link.done <- true
+		}
 
-        done := <- page.done
-        if done != true {
-            t.Errorf("got: %t, want: %t", done, true)
-        }
-    })
+		done := <-page.done
+		if done != true {
+			t.Errorf("got: %t, want: %t", done, true)
+		}
+	})
 
 }

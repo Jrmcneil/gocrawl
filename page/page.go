@@ -1,8 +1,8 @@
 package page
 
 import (
-    "regexp"
-    "sync"
+	"regexp"
+	"sync"
 )
 
 type Page struct {

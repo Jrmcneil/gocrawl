@@ -21,8 +21,8 @@ func (record *Record) Start() {
 				if record.newRecord(page) {
 					record.out <- page
 				} else {
-				    page.done <- true
-                }
+					page.done <- true
+				}
 
 			case <-record.quit:
 				return
@@ -33,9 +33,9 @@ func (record *Record) Start() {
 
 func NewRecord(in chan *Page, out chan *Page, quit chan bool) *Record {
 	return &Record{
-		in: in,
-		out: out,
-		quit: quit,
+		in:     in,
+		out:    out,
+		quit:   quit,
 		record: make(map[string]bool),
 	}
 }

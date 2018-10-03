@@ -5,7 +5,6 @@ type Worker struct {
 	queue   chan Job
 	record  chan Job
 	quit    chan bool
-	started chan bool
 }
 
 type HttpClient interface {
@@ -37,7 +36,6 @@ func (worker *Worker) Start() {
 			}
 		}
 	}()
-	worker.started <- true
 }
 
 func (worker *Worker) send(links []Job) {
@@ -52,6 +50,5 @@ func NewWorker(queue chan Job, record chan Job, client HttpClient) *Worker {
 	worker.queue = queue
 	worker.record = record
 	worker.quit = make(chan bool, 1)
-	worker.started = make(chan bool, 1)
 	return worker
 }

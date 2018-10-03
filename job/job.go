@@ -5,5 +5,6 @@ type Job interface {
     Links() []Job
     Build(string)
     Close()
+    Done() chan bool
 }
 

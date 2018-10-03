@@ -1,8 +1,8 @@
 package record
 
 import (
-	"gocrawl/job"
-	"testing"
+    "gocrawl/job"
+    "testing"
 )
 
 func TestRecord(t *testing.T) {
@@ -41,6 +41,27 @@ func TestRecord(t *testing.T) {
 			t.Errorf("got: %d, want: %d", len(out), 0)
 		}
 	})
+
+    t.Run("Closes a visited page", func(t *testing.T) {
+        in := make(chan job.Job)
+        out := make(chan job.Job)
+        quit := make(chan bool, 1)
+        record := NewRecord(in, out, quit)
+        page1 := &TestJob{calls: make(map[string]int, 4), address: "www.monzo.com"}
+        page2 := &TestJob{calls: make(map[string]int, 4), address: "www.monzo.com"}
+
+        record.Start()
+        go func() {
+            in <- page1
+            in <- page2
+        }()
+
+        <-out
+
+        if len(page2.Done()) != 0 {
+            t.Errorf("got: %d, want: %d", len(page2.Done()), 0)
+        }
+    })
 
 	t.Run("Increases the record with each new page", func(t *testing.T) {
 		in := make(chan job.Job)

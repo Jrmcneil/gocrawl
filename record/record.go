@@ -1,6 +1,8 @@
 package record
 
-import "gocrawl/job"
+import (
+    "gocrawl/job"
+)
 
 type Record struct {
 	record map[string]bool

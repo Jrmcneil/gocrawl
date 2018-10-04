@@ -27,7 +27,7 @@ func (httpClient *Client) Get(url string) (string, error) {
     return string(body), nil
 }
 
-func NewClient() *Client {
+func NewClient() HttpClient {
     httpClient := new(Client)
     httpClient.client = &http.Client{
         Timeout: time.Second * 5,

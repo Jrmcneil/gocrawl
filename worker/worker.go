@@ -19,6 +19,7 @@ func (worker *Worker) Start() {
 			case p := <-worker.queue:
 				resp, err := worker.client.Get(p.Address())
 				if err != nil {
+				    p.Ready() <- true
 					p.Close()
 				} else {
 					p.Build(resp)

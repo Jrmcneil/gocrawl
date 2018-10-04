@@ -73,10 +73,15 @@ func TestWorker(t *testing.T) {
 		queue <- p
 
 		callsToClose := p.calls["Close"]
+	    callsToReady := p.calls["Ready"]
 
 		if callsToClose != 1 {
 			t.Errorf("got: %d, want: %d", callsToClose, 1)
 		}
+
+        if callsToReady != 1 {
+            t.Errorf("got: %d, want: %d", callsToReady, 1)
+        }
 
 		if len(record) != 0 {
 			t.Errorf("got: %d, want: %d", len(record), 0)

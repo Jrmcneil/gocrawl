@@ -2,14 +2,15 @@ package gocrawl
 
 import (
 	"flag"
-    "fmt"
-    "gocrawl/client"
+	"fmt"
+	"gocrawl/client"
 	"gocrawl/crawler"
 )
 
 var (
 	workers = flag.Int("w", 10, "Number of job workers to initialise")
 	queueSize = flag.Int("q", 10, "Size of input and output channels to the page record")
+
 )
 
 func main() {

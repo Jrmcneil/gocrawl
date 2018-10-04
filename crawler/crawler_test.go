@@ -76,7 +76,7 @@ htmlMap["www.monzo.com/reviews"] = reviews
 
     t.Run("Crawl returns a sitemap", func(t *testing.T) {
 
-        c := NewCrawler(1, 10, testClientBuilder(htmlMap))
+        c := NewCrawler(1, 2, testClientBuilder(htmlMap))
         result := c.Crawl("https://www.monzo.com/")
 
         fmt.Println(result)

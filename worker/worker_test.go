@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"fmt"
 	"gocrawl/job"
 	"testing"
 )
@@ -34,8 +35,8 @@ func TestWorker(t *testing.T) {
 	t.Run("Start adds the page's links to the record", func(t *testing.T) {
 		client := new(TestClient)
 		client.args = make([]string, 1)
-		queue := make(chan job.Job)
-		record := make(chan job.Job)
+		queue := make(chan job.Job, 2)
+		record := make(chan job.Job, 1)
 
 		worker := NewWorker(queue, record, client)
 
@@ -55,31 +56,60 @@ func TestWorker(t *testing.T) {
 		}
 	})
 
-	t.Run("Start marks the page as done if there is an error and doesn't add to record", func(t *testing.T) {
+	t.Run("Start marks the page as ready if there is an error and doesn't add to record", func(t *testing.T) {
 		client := new(TestClient)
 		client.args = make([]string, 1)
-		queue := make(chan job.Job)
-		record := make(chan job.Job)
+		queue := make(chan job.Job, 1)
+		record := make(chan job.Job, 1)
+		ready := make(chan bool, 1)
 
 		worker := NewWorker(queue, record, client)
 
-		address := "www.monzo.com"
-		p := &TestJob{calls: make(map[string]int, 4)}
-		p.address = address
+		p := &TestJob{calls: make(map[string]int, 4), ready: ready}
+		p.address = "www.monzo.com"
 
 		client.err = &TestError{}
 
 		go worker.Start()
 		queue <- p
 
-		callsToReady := p.calls["Ready"]
+		r := <-ready
 
-		if callsToReady != 1 {
-			t.Errorf("got: %d, want: %d", callsToReady, 1)
+		if r != true {
+			t.Errorf("got: %d, want: %d", r, true)
 		}
 
 		if len(record) != 0 {
 			t.Errorf("got: %d, want: %d", len(record), 0)
+		}
+	})
+
+	t.Run("Overloads if the record is full", func(t *testing.T) {
+		client := new(TestClient)
+		client.args = make([]string, 1)
+		queue := make(chan job.Job, 1)
+		record := make(chan job.Job, 1)
+
+		worker := NewWorker(queue, record, client)
+
+		p1 := &TestJob{calls: make(map[string]int, 4)}
+		p1.address = "www.monzo.com"
+		link1 := &TestJob{calls: make(map[string]int, 4)}
+		p1.links = []job.Job{link1}
+
+		p2 := &TestJob{calls: make(map[string]int, 4)}
+		p2.address = "www.monzo.com/about"
+		link2 := &TestJob{calls: make(map[string]int, 4)}
+		p2.links = []job.Job{link2}
+
+		go worker.Start()
+		queue <- p1
+		queue <- p2
+
+		overload := <-worker.overload
+
+		if overload != true {
+			t.Errorf("got: %d, want: %d", overload, true)
 		}
 	})
 }
@@ -101,6 +131,7 @@ type TestJob struct {
 	calls   map[string]int
 	args    []string
 	address string
+	ready   chan bool
 }
 
 func (job *TestJob) Address() string {
@@ -123,8 +154,9 @@ func (job *TestJob) Links() []job.Job {
 }
 
 func (job *TestJob) Ready() chan bool {
+	fmt.Println("READY")
 	job.calls["Ready"] = job.calls["Ready"] + 1
-	return make(chan bool, 1)
+	return job.ready
 }
 func (job *TestJob) ResetLinks() {}
 

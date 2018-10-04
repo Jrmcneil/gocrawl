@@ -1,8 +1,9 @@
 package worker
 
 import (
-	"gocrawl/client"
-	"gocrawl/job"
+    "fmt"
+    "gocrawl/client"
+    "gocrawl/job"
 )
 
 type Worker struct {
@@ -10,33 +11,43 @@ type Worker struct {
 	queue  <-chan job.Job
 	record chan<- job.Job
 	quit   chan bool
+	overload chan bool
 }
 
 func (worker *Worker) Start() {
 	for {
-		select {
-		case p := <-worker.queue:
-			resp, err := worker.client.Get(p.Address())
-			if err != nil {
-				p.Ready() <- true
-			} else {
-				p.Build(resp)
-				worker.send(p.Links())
-			}
+        select {
+        case p := <-worker.queue:
+            resp, err := worker.client.Get(p.Address())
+            if err != nil {
+                p.Ready() <- true
+            } else {
+                p.Build(resp)
+                worker.send(p.Links())
+            }
 
-		case <-worker.quit:
-			return
-		}
-	}
+        case <-worker.quit:
+            return
+        }
+    }
 }
 
 func (worker *Worker) Stop() {
 	worker.quit <- true
 }
 
+func (worker *Worker) Overload() chan bool {
+    return worker.overload
+}
+
 func (worker *Worker) send(links []job.Job) {
-	for _, link := range links {
-        worker.record <- link
+	for i := range links {
+        select {
+        case worker.record <- links[i]:
+        default:
+            fmt.Println("OVERLOAD")
+            worker.Overload() <- true
+        }
 	}
 }
 
@@ -46,5 +57,6 @@ func NewWorker(queue <-chan job.Job, record chan<- job.Job, client client.HttpCl
 	worker.queue = queue
 	worker.record = record
 	worker.quit = make(chan bool, 1)
+	worker.overload = make(chan bool, 1)
 	return worker
 }

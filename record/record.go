@@ -25,7 +25,6 @@ func (record *Record) Start() {
 				record.Out <- page
 			} else {
 				page.Ready() <- true
-				page.Close()
 			}
 
 		case <-record.quit:

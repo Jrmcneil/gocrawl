@@ -19,7 +19,6 @@ func (worker *Worker) Start() {
 			resp, err := worker.client.Get(p.Address())
 			if err != nil {
 				p.Ready() <- true
-				p.Close()
 			} else {
 				p.Build(resp)
 				worker.send(p.Links())

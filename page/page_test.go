@@ -69,40 +69,4 @@ func TestPage(t *testing.T) {
 			t.Errorf("got: %t, want: %t", len(page.Ready()), 1)
 		}
 	})
-
-	t.Run("Pages are not closed by default", func(t *testing.T) {
-		page := NewPage("https://www.monzo.com/contact/london/")
-		page.Build(htmlString)
-
-		done := len(page.Done()) != 0
-
-		if done != false {
-			t.Errorf("got: %t, want: %t", done, false)
-		}
-	})
-
-	t.Run("Page closes once its links are closed", func(t *testing.T) {
-		page := NewPage("https://www.monzo.com/contact/london/")
-		page.Build(htmlString)
-
-		for _, link := range page.links {
-			link.Close()
-		}
-
-		done := <-page.Done()
-		if done != true {
-			t.Errorf("got: %t, want: %t", done, true)
-		}
-	})
-
-	t.Run("Page with no links closes immediately", func(t *testing.T) {
-		page := NewPage("https://www.monzo.com/contact/london/")
-		page.Build(``)
-
-		done := <-page.Done()
-		if done != true {
-			t.Errorf("got: %t, want: %t", done, true)
-		}
-	})
-
 }

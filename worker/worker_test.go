@@ -72,12 +72,7 @@ func TestWorker(t *testing.T) {
 		go worker.Start()
 		queue <- p
 
-		callsToClose := p.calls["Close"]
 		callsToReady := p.calls["Ready"]
-
-		if callsToClose != 1 {
-			t.Errorf("got: %d, want: %d", callsToClose, 1)
-		}
 
 		if callsToReady != 1 {
 			t.Errorf("got: %d, want: %d", callsToReady, 1)
@@ -106,7 +101,6 @@ type TestJob struct {
 	calls   map[string]int
 	args    []string
 	address string
-	done    chan bool
 }
 
 func (job *TestJob) Address() string {
@@ -126,11 +120,6 @@ func (job *TestJob) Build(str string) {
 func (job *TestJob) Links() []job.Job {
 	job.calls["Links"] = job.calls["Links"] + 1
 	return job.links
-}
-
-func (job *TestJob) Done() chan bool {
-	job.calls["Done"] = job.calls["Done"] + 1
-	return job.done
 }
 
 func (job *TestJob) Ready() chan bool {

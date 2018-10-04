@@ -42,7 +42,7 @@ func TestRecord(t *testing.T) {
 		}
 	})
 
-	t.Run("Closes a visited page", func(t *testing.T) {
+	t.Run("Sets a visited page to ready", func(t *testing.T) {
 		in := make(chan job.Job)
 		out := make(chan job.Job)
 		quit := make(chan bool, 1)
@@ -58,11 +58,8 @@ func TestRecord(t *testing.T) {
 
 		<-out
 
-		if len(page2.Done()) != 0 {
-			t.Errorf("got: %d, want: %d", len(page2.Done()), 0)
-		}
 		if len(page2.Ready()) != 0 {
-			t.Errorf("got: %d, want: %d", len(page2.Done()), 0)
+			t.Errorf("got: %d, want: %d", len(page2.Ready()), 0)
 		}
 	})
 
@@ -95,7 +92,6 @@ type TestJob struct {
 	calls   map[string]int
 	args    []string
 	address string
-	done    chan bool
 }
 
 func (job *TestJob) Address() string {
@@ -115,11 +111,6 @@ func (job *TestJob) Build(str string) {
 func (job *TestJob) Links() []job.Job {
 	job.calls["Links"] = job.calls["Links"] + 1
 	return job.links
-}
-
-func (job *TestJob) Done() chan bool {
-	job.calls["Done"] = job.calls["Done"] + 1
-	return job.done
 }
 
 func (job *TestJob) Ready() chan bool {

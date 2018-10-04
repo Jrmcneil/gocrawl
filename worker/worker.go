@@ -13,38 +13,31 @@ type Worker struct {
 }
 
 func (worker *Worker) Start() {
-	go func() {
-		for {
-			select {
-			case p := <-worker.queue:
-				resp, err := worker.client.Get(p.Address())
-				if err != nil {
-				    p.Ready() <- true
-					p.Close()
-				} else {
-					p.Build(resp)
-					worker.send(p.Links())
-				}
-
-			case <-worker.quit:
-				return
+	for {
+		select {
+		case p := <-worker.queue:
+			resp, err := worker.client.Get(p.Address())
+			if err != nil {
+				p.Ready() <- true
+				p.Close()
+			} else {
+				p.Build(resp)
+				worker.send(p.Links())
 			}
+
+		case <-worker.quit:
+			return
 		}
-	}()
+	}
 }
 
 func (worker *Worker) Stop() {
-    worker.quit <- true
+	worker.quit <- true
 }
 
 func (worker *Worker) send(links []job.Job) {
 	for _, link := range links {
-	    select {
-        case worker.record <- link:
-        default:
-
-
-        }
+        worker.record <- link
 	}
 }
 

@@ -1,7 +1,7 @@
 package record
 
 import (
-    "gocrawl/job"
+	"gocrawl/job"
 )
 
 type Record struct {
@@ -18,26 +18,24 @@ func (record *Record) newRecord(page job.Job) bool {
 }
 
 func (record *Record) Start() {
-	go func() {
-		for {
-			select {
-			case page := <-record.In:
-				if record.newRecord(page) {
-					record.Out <- page
-				} else {
-					page.Ready() <- true
-					page.Close()
-				}
-
-			case <-record.quit:
-				return
+	for {
+		select {
+		case page := <-record.In:
+			if record.newRecord(page) {
+				record.Out <- page
+			} else {
+				page.Ready() <- true
+				page.Close()
 			}
+
+		case <-record.quit:
+			return
 		}
-	}()
+	}
 }
 
 func (record *Record) Stop() {
-    record.quit <- true
+	record.quit <- true
 }
 
 func NewRecord(in <-chan job.Job, out chan<- job.Job, quit chan bool) *Record {

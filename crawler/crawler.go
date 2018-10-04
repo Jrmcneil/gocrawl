@@ -31,8 +31,8 @@ func (c *Crawler) stop() {
 
 func (c *Crawler) start(root job.Job) {
     c.startWorkers()
-    c.record.Start()
-    c.tree.Build(root)
+    go c.record.Start()
+    go c.tree.Build(root)
     c.pipeline <- root
 }
 
@@ -46,7 +46,7 @@ func (c* Crawler) stopWorkers() {
 func (c *Crawler) startWorkers() {
     workers := len(c.workers)
     for i := 0; i < workers; i++ {
-        c.workers[i].Start()
+        go c.workers[i].Start()
     }
 }
 

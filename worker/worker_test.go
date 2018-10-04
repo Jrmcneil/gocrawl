@@ -19,7 +19,7 @@ func TestWorker(t *testing.T) {
 		p := &TestJob{calls: make(map[string]int, 4)}
 		p.address = address
 
-		worker.Start()
+		go worker.Start()
 		queue <- p
 
 		if client.calls != 1 {
@@ -45,7 +45,7 @@ func TestWorker(t *testing.T) {
 		link := &TestJob{calls: make(map[string]int, 4)}
 		p.links = []job.Job{link}
 
-		worker.Start()
+		go worker.Start()
 
 		queue <- p
 		sent := <-record
@@ -69,19 +69,19 @@ func TestWorker(t *testing.T) {
 
 		client.err = &TestError{}
 
-		worker.Start()
+		go worker.Start()
 		queue <- p
 
 		callsToClose := p.calls["Close"]
-	    callsToReady := p.calls["Ready"]
+		callsToReady := p.calls["Ready"]
 
 		if callsToClose != 1 {
 			t.Errorf("got: %d, want: %d", callsToClose, 1)
 		}
 
-        if callsToReady != 1 {
-            t.Errorf("got: %d, want: %d", callsToReady, 1)
-        }
+		if callsToReady != 1 {
+			t.Errorf("got: %d, want: %d", callsToReady, 1)
+		}
 
 		if len(record) != 0 {
 			t.Errorf("got: %d, want: %d", len(record), 0)

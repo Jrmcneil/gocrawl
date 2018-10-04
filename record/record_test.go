@@ -13,7 +13,7 @@ func TestRecord(t *testing.T) {
 		record := NewRecord(in, out, quit)
 		page := &TestJob{calls: make(map[string]int, 4), address: "www.monzo.com"}
 
-		record.Start()
+		go record.Start()
 		in <- page
 		savedPage := <-out
 
@@ -29,7 +29,7 @@ func TestRecord(t *testing.T) {
 		record := NewRecord(in, out, quit)
 		page := &TestJob{calls: make(map[string]int, 4), address: "www.monzo.com"}
 
-		record.Start()
+		go record.Start()
 		go func() {
 			in <- page
 			in <- page
@@ -50,7 +50,7 @@ func TestRecord(t *testing.T) {
 		page1 := &TestJob{calls: make(map[string]int, 4), address: "www.monzo.com"}
 		page2 := &TestJob{calls: make(map[string]int, 4), address: "www.monzo.com"}
 
-		record.Start()
+		go record.Start()
 		go func() {
 			in <- page1
 			in <- page2
@@ -74,7 +74,7 @@ func TestRecord(t *testing.T) {
 		page1 := &TestJob{calls: make(map[string]int, 4), address: "www.monzo.com"}
 		page2 := &TestJob{calls: make(map[string]int, 4), address: "www.monzo.com/contact"}
 
-		record.Start()
+		go record.Start()
 		go func() {
 			in <- page1
 			in <- page1

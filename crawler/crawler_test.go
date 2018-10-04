@@ -19,10 +19,11 @@ root := `
     </head>
     <body>
         <div>
-            <a target="_self" href="https://www.monzo.com/contact">Contact Us</a>
+ <a href="https://www.monzo.com/about">About Us</a>
+           
         </div>
 
-        <a href="https://www.monzo.com/about">About Us</a>
+       <a target="_self" href="https://www.monzo.com/contact">Contact Us</a> 
     </body>
 </html>
 `

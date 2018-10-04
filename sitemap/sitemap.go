@@ -14,26 +14,26 @@ func (sitemap *Sitemap) Build(root job.Job) {
         var sb strings.Builder
         var indentSb strings.Builder
         indentSb.WriteString("")
-        buildMap(root, &sb, &indentSb, true)
+        buildMap(root, &sb, "", true)
         sitemap.Result <- sb.String()
     } ()
 }
 
-func buildMap(node job.Job, sb *strings.Builder, indentSb *strings.Builder, last bool) {
-    sb.WriteString(indentSb.String())
+func buildMap(node job.Job, sb *strings.Builder, indent string, last bool) {
+   sb.WriteString(indent)
+   if last {
+       sb.WriteString("\\-")
+       indent += "  "
+   } else {
+       sb.WriteString("|-")
+       indent += "| "
+   }
 
-    if last {
-        sb.WriteString("\\-")
-        indentSb.WriteString("  ")
-    } else {
-        sb.WriteString("|-")
-        indentSb.WriteString("| ")
-    }
-    sb.WriteString(node.Address() + "\n")
+   sb.WriteString(node.Address() + "\n")
 
-    <- node.Ready()
+   <- node.Ready()
 
-    for i := 0; i < len(node.Links()); i++ {
-        buildMap(node.Links()[i], sb, indentSb, i == len(node.Links()) - 1)
-    }
+   for i := 0; i < len(node.Links()); i++ {
+       buildMap(node.Links()[i], sb, indent, i == len(node.Links()) - 1)
+   }
 }

@@ -23,6 +23,10 @@ func (page *Page) Links() []job.Job {
 	return page.links
 }
 
+func (page *Page) ResetLinks() {
+    page.links = make([]job.Job, 0)
+}
+
 func (page *Page) Build(html string) {
 	matches := findMatches(page.address, html)
 	page.links = setLinks(stripURL(page.address), matches)

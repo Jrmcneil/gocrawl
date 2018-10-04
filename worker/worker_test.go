@@ -126,6 +126,7 @@ func (job *TestJob) Ready() chan bool {
 	job.calls["Ready"] = job.calls["Ready"] + 1
 	return make(chan bool, 1)
 }
+func (job *TestJob) ResetLinks() {}
 
 type TestError struct{}
 

@@ -113,6 +113,8 @@ func (job *TestJob) Links() []job.Job {
 	return job.links
 }
 
+func (job *TestJob) ResetLinks() {}
+
 func (job *TestJob) Ready() chan bool {
 	job.calls["Ready"] = job.calls["Ready"] + 1
 	return make(chan bool, 1)

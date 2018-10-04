@@ -30,8 +30,11 @@ func buildMap(node job.Job, sb *strings.Builder, indent string, last bool) {
 	sb.WriteString(node.Address() + "\n")
 
 	<-node.Ready()
+    links := node.Links()
+    node.ResetLinks()
 
-	for i := 0; i < len(node.Links()); i++ {
-		buildMap(node.Links()[i], sb, indent, i == len(node.Links())-1)
+    length := len(links)
+	for i := 0; i < length; i++ {
+		buildMap(links[i], sb, indent, i == length - 1)
 	}
 }

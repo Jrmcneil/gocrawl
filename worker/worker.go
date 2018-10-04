@@ -33,9 +33,18 @@ func (worker *Worker) Start() {
 	}()
 }
 
+func (worker *Worker) Stop() {
+    worker.quit <- true
+}
+
 func (worker *Worker) send(links []job.Job) {
 	for _, link := range links {
-		worker.record <- link
+	    select {
+        case worker.record <- link:
+        default:
+
+
+        }
 	}
 }
 

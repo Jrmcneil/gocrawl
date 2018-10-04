@@ -24,6 +24,8 @@ root := `
         </div>
 
        <a target="_self" href="https://www.monzo.com/contact">Contact Us</a> 
+
+        <a href="https://www.monzo.com/reviews">Reviews</a>
     </body>
 </html>
 `
@@ -55,14 +57,26 @@ contact := `
 </html>
 `
 
+reviews := `
+<html>
+    <head>
+        <title>Reviews</title>
+    </head>
+    <body>
+        Check us out at <a href="https://www.trustpilot.com/monzo">Trustpilot</a>
+    </body>
+</html>
+`
+
 
 htmlMap["https://www.monzo.com/"] = root
 htmlMap["www.monzo.com/about"] = about
 htmlMap["www.monzo.com/contact"] = contact
+htmlMap["www.monzo.com/reviews"] = reviews
 
     t.Run("Crawl returns a sitemap", func(t *testing.T) {
 
-        c := NewCrawler(3, testClientBuilder(htmlMap))
+        c := NewCrawler(1, testClientBuilder(htmlMap))
         result := c.Crawl("https://www.monzo.com/")
 
         fmt.Println(result)

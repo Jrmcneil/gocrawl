@@ -18,12 +18,29 @@ type Crawler struct {
 }
 
 func (c *Crawler) Crawl(url string) string {
+    defer c.stop()
     root := page.NewPage(url)
+    c.start(root)
+    return <- c.tree.Result
+}
+
+func (c *Crawler) stop() {
+    c.record.Stop()
+    c.stopWorkers()
+}
+
+func (c *Crawler) start(root job.Job) {
     c.startWorkers()
     c.record.Start()
-    c.pipeline <- root
     c.tree.Build(root)
-    return <- c.tree.Result
+    c.pipeline <- root
+}
+
+func (c* Crawler) stopWorkers() {
+    workers := len(c.workers)
+    for i := 0; i < workers; i++ {
+        c.workers[i].Stop()
+    }
 }
 
 func (c *Crawler) startWorkers() {
@@ -35,7 +52,7 @@ func (c *Crawler) startWorkers() {
 
 func NewCrawler(workers int, clientBuilder client.HttpClientBuilder) *Crawler {
    crawler := new(Crawler)
-   crawler.queue = make(chan job.Job, 10)
+   crawler.queue = make(chan job.Job, 1)
    crawler.pipeline = make(chan job.Job, 10)
    crawler.record = record.NewRecord(crawler.pipeline, crawler.queue, make(chan bool, 1))
    crawler.workers = make([]*worker.Worker, workers)

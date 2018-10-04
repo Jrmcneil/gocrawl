@@ -50,10 +50,10 @@ func (c *Crawler) startWorkers() {
     }
 }
 
-func NewCrawler(workers int, clientBuilder client.HttpClientBuilder) *Crawler {
+func NewCrawler(workers int, queueSize int, clientBuilder client.HttpClientBuilder) *Crawler {
    crawler := new(Crawler)
-   crawler.queue = make(chan job.Job, 1)
-   crawler.pipeline = make(chan job.Job, 10)
+   crawler.queue = make(chan job.Job, queueSize)
+   crawler.pipeline = make(chan job.Job, queueSize)
    crawler.record = record.NewRecord(crawler.pipeline, crawler.queue, make(chan bool, 1))
    crawler.workers = make([]*worker.Worker, workers)
    crawler.tree = &sitemap.Sitemap{Result: make(chan string, 1)}

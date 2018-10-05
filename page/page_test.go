@@ -1,18 +1,19 @@
 package page
 
 import (
-	"gocrawl/job"
-	"testing"
+    "gocrawl/job"
+    "testing"
 )
 
 func TestPage(t *testing.T) {
 	const htmlString = `
-        <a href="https://www.monzo.com/accounts"</a>
-		<a href="http://monzo.co.uk/advice"</a>
-		<a href="http://www.monzo.com/banking/loans.php"</a>
-		<a href="http://www.monzo.com/"</a>
-        <a href="www.monzo.co.uk/"</a>
-		<a href="https://www.monzo.com/contact/london" </a>
+        <a href="https://www.monzo.com/accounts"></a>
+		<a target="_self" href="http://monzo.co.uk/advice"></a>
+		<a href="http://www.monzo.com/banking/loans.php"></a>
+		<a href="http://www.monzo.com/"> Some words</a>
+        <a href="www.monzo.co.uk/"></a>
+        <a href="www.google.com/something/"></a>
+		<a href="https://www.monzo.com/contact/london"> </a>
 	`
 
 	assertCorrectLinks := func(t *testing.T, links []job.Job, expected map[string]bool) {
@@ -67,7 +68,7 @@ func TestPage(t *testing.T) {
 		page := NewPage("https://www.monzo.com/contact/london/")
 
 		if len(page.Ready()) != 0 {
-			t.Errorf("got: %t, want: %t", len(page.Ready()), 0)
+			t.Errorf("got: %d, want: %d", len(page.Ready()), 0)
 		}
 	})
 
@@ -76,7 +77,7 @@ func TestPage(t *testing.T) {
 		page.Build(htmlString)
 
 		if len(page.Ready()) != 1 {
-			t.Errorf("got: %t, want: %t", len(page.Ready()), 1)
+			t.Errorf("got: %d, want: %d", len(page.Ready()), 1)
 		}
 	})
 }

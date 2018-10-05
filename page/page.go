@@ -42,7 +42,7 @@ func setLinks(domain string, matches [][]string) []job.Job {
 }
 
 func findMatches(address string, html string) [][]string {
-	regex := regexp.MustCompile(`<a[ ]+.*href=\".*` + escapedDomain(address) + `(\/.*)\".*<\/a>`)
+	regex := regexp.MustCompile(`<a[ ]+.*href=\".*` + escapedDomain(address) + `(\/.*)\".*>.*<\/a>`)
 	return regex.FindAllStringSubmatch(html, -1)
 }
 

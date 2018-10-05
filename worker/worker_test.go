@@ -75,7 +75,7 @@ func TestWorker(t *testing.T) {
 		r := <-ready
 
 		if r != true {
-			t.Errorf("got: %d, want: %d", r, true)
+			t.Errorf("got: %t, want: %t", r, true)
 		}
 
 		if len(record) != 0 {
@@ -108,7 +108,7 @@ func TestWorker(t *testing.T) {
 		overload := <-worker.overload
 
 		if overload != true {
-			t.Errorf("got: %d, want: %d", overload, true)
+			t.Errorf("got: %t, want: %t", overload, true)
 		}
 	})
 }

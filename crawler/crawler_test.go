@@ -1,18 +1,17 @@
 package crawler
 
 import (
-    "fmt"
-    "gocrawl/client"
-    "testing"
+	"fmt"
+	"gocrawl/client"
+	"testing"
+	"time"
 )
-
-
 
 func TestCrawler(t *testing.T) {
 
-htmlMap := make(map[string]string, 3)
+	htmlMap := make(map[string]string, 3)
 
-root := `
+	root := `
 <html>
     <head>
         <title>Monzo.com</title>
@@ -30,7 +29,7 @@ root := `
 </html>
 `
 
-about := `
+	about := `
 <html>
     <head>
         <title>About</title>
@@ -46,7 +45,7 @@ about := `
     </body>
 </html>
 `
-contact := `
+	contact := `
 <html>
     <head>
         <title>Contacts</title>
@@ -57,7 +56,7 @@ contact := `
 </html>
 `
 
-reviews := `
+	reviews := `
 <html>
     <head>
         <title>Reviews</title>
@@ -68,33 +67,30 @@ reviews := `
 </html>
 `
 
+	htmlMap["https://www.monzo.com/"] = root
+	htmlMap["www.monzo.com/about"] = about
+	htmlMap["www.monzo.com/contact"] = contact
+	htmlMap["www.monzo.com/reviews"] = reviews
 
-htmlMap["https://www.monzo.com/"] = root
-htmlMap["www.monzo.com/about"] = about
-htmlMap["www.monzo.com/contact"] = contact
-htmlMap["www.monzo.com/reviews"] = reviews
+	t.Run("Crawl returns a sitemap", func(t *testing.T) {
 
-    t.Run("Crawl returns a sitemap", func(t *testing.T) {
+		c := NewCrawler(1, 2, testClientBuilder(htmlMap), 1)
+		result := c.Crawl("https://www.monzo.com/")
 
-        c := NewCrawler(1, 2, testClientBuilder(htmlMap))
-        result := c.Crawl("https://www.monzo.com/")
-
-        fmt.Println(result)
-    })
+		fmt.Println(result)
+	})
 }
 
 type TestClient struct {
-    htmlMap map[string]string
+	htmlMap map[string]string
 }
 
-func testClientBuilder(htmlMap map[string]string) func() client.HttpClient {
-    return func() client.HttpClient {
-        return &TestClient{htmlMap: htmlMap}
-    }
+func testClientBuilder(htmlMap map[string]string) func(limiter <-chan time.Time) client.HttpClient {
+	return func(limiter <-chan time.Time) client.HttpClient {
+		return &TestClient{htmlMap: htmlMap}
+	}
 }
-
 
 func (client *TestClient) Get(address string) (string, error) {
-    return client.htmlMap[address], nil
+	return client.htmlMap[address], nil
 }
-

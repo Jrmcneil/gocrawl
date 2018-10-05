@@ -53,15 +53,15 @@ func TestPage(t *testing.T) {
 		assertCorrectLinks(t, page.links, expected)
 	})
 
-    t.Run("ResetLinks removes references to linked Jobs", func(t *testing.T) {
-        page := NewPage("https://www.monzo.com/contact/london/")
-        page.Build(htmlString)
-        page.ResetLinks()
+	t.Run("ResetLinks removes references to linked Jobs", func(t *testing.T) {
+		page := NewPage("https://www.monzo.com/contact/london/")
+		page.Build(htmlString)
+		page.ResetLinks()
 
-        if len(page.links) != 0 {
-            t.Errorf("got: %v, want: %v", len(page.links), 0)
-        }
-    })
+		if len(page.links) != 0 {
+			t.Errorf("got: %v, want: %v", len(page.links), 0)
+		}
+	})
 
 	t.Run("Pages are not ready when created", func(t *testing.T) {
 		page := NewPage("https://www.monzo.com/contact/london/")

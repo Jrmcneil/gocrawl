@@ -14,10 +14,10 @@ Install the dependencies with ```go get ./...```
 
 Install the crawler globally with ```go install``` or locally with ```go build```. 
 
-To view a sitemap, run the executable with the root url of the site you want to crawl. You can also configure the number of workers and queue sizes instead of using the defaults.
+To view a sitemap, run the executable with the root url of the site you want to crawl. You can also configure the number of workers, queue sizes and HTTP request rate limit instead of using the defaults.
 
 ```bash
-gocrawl -w 15 -q 30 http://www.example.com
+gocrawl -w 15 -q 30 -l 300 http://www.example.com
 ```
 
 for help check ```gocrawl -h```
@@ -35,7 +35,6 @@ The program will exit with a warning if workers become overloaded and cannot sen
 To Do
 ---
 
-- Rate limiting
 - Expand link parsing to cover relative links. Currently only absolute links will be processed as new pages.
 - Under the right circumstances the record could increase until it overflows the heap - i.e. a huge website with a manageable number of new links per page. Consider setting an upper bound to the record size
 - Refactor tests

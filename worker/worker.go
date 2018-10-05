@@ -1,34 +1,34 @@
 package worker
 
 import (
-    "gocrawl/client"
-    "gocrawl/job"
+	"gocrawl/client"
+	"gocrawl/job"
 )
 
 type Worker struct {
-	client client.HttpClient
-	queue  <-chan job.Job
-	record chan<- job.Job
-	quit   chan bool
+	client   client.HttpClient
+	queue    <-chan job.Job
+	record   chan<- job.Job
+	quit     chan bool
 	overload chan bool
 }
 
 func (worker *Worker) Start() {
 	for {
-        select {
-        case p := <-worker.queue:
-            resp, err := worker.client.Get(p.Address())
-            if err != nil {
-                p.Ready() <- true
-            } else {
-                p.Build(resp)
-                worker.send(p.Links())
-            }
+		select {
+		case p := <-worker.queue:
+			resp, err := worker.client.Get(p.Address())
+			if err != nil {
+				p.Ready() <- true
+			} else {
+				p.Build(resp)
+				worker.send(p.Links())
+			}
 
-        case <-worker.quit:
-            return
-        }
-    }
+		case <-worker.quit:
+			return
+		}
+	}
 }
 
 func (worker *Worker) Stop() {
@@ -36,16 +36,16 @@ func (worker *Worker) Stop() {
 }
 
 func (worker *Worker) Overload() chan bool {
-    return worker.overload
+	return worker.overload
 }
 
 func (worker *Worker) send(links []job.Job) {
 	for i := range links {
-        select {
-        case worker.record <- links[i]:
-        default:
-            worker.Overload() <- true
-        }
+		select {
+		case worker.record <- links[i]:
+		default:
+			worker.Overload() <- true
+		}
 	}
 }
 

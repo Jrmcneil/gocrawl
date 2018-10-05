@@ -1,8 +1,8 @@
 package page
 
 import (
-    "gocrawl/job"
-    "regexp"
+	"gocrawl/job"
+	"regexp"
 )
 
 type Page struct {
@@ -24,7 +24,7 @@ func (page *Page) Links() []job.Job {
 }
 
 func (page *Page) ResetLinks() {
-    page.links = make([]job.Job, 0)
+	page.links = make([]job.Job, 0)
 }
 
 func (page *Page) Build(html string) {

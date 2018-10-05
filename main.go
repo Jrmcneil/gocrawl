@@ -1,4 +1,4 @@
-package gocrawl
+package main
 
 import (
 	"flag"
@@ -10,7 +10,7 @@ import (
 var (
 	workers   = flag.Int("w", 10, "Number of job workers to initialise")
 	queueSize = flag.Int("q", 10, "Size of input and output channels to the page record")
-	rateLimit = flag.Int("l", 50, "Time (in milliseconds) between HTTP requests")
+	rateLimit = flag.Int("l", 1000, "Time (in milliseconds) between HTTP requests")
 )
 
 func main() {

@@ -7,6 +7,8 @@ import (
     "gocrawl/record"
     "gocrawl/sitemap"
     "gocrawl/worker"
+    "log"
+    "os"
 )
 
 type Crawler struct {
@@ -18,10 +20,11 @@ type Crawler struct {
 }
 
 func (c *Crawler) Crawl(url string) string {
-    defer c.stop()
+    defer func() {c.stop()}()
     root := page.NewPage(url)
-    c.start(root)
-    return <- c.tree.Result
+    c.start(root, url)
+    output := <- c.tree.Result
+    return output
 }
 
 func (c *Crawler) stop() {
@@ -29,8 +32,8 @@ func (c *Crawler) stop() {
     c.stopWorkers()
 }
 
-func (c *Crawler) start(root job.Job) {
-    c.startWorkers()
+func (c *Crawler) start(root job.Job, url string) {
+    c.startWorkers(url)
     go c.record.Start()
     go c.tree.Build(root)
     c.pipeline <- root
@@ -43,10 +46,22 @@ func (c* Crawler) stopWorkers() {
     }
 }
 
-func (c *Crawler) startWorkers() {
+func (c *Crawler) startWorkers(url string) {
     workers := len(c.workers)
+    c.watchWorkers(url)
     for i := 0; i < workers; i++ {
         go c.workers[i].Start()
+    }
+}
+
+func (c *Crawler) watchWorkers(url string) {
+    for i := range c.workers {
+        go func(worker *worker.Worker) {
+            <- worker.Overload()
+            log.Printf("WARNING: Workers overloaded. Could not complete sitemap. Increase queue size to fully process %s", url)
+            c.stop()
+            os.Exit(1)
+        }(c.workers[i])
     }
 }
 

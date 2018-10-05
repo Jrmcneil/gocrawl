@@ -1,7 +1,6 @@
 package worker
 
 import (
-    "fmt"
     "gocrawl/client"
     "gocrawl/job"
 )
@@ -45,7 +44,6 @@ func (worker *Worker) send(links []job.Job) {
         select {
         case worker.record <- links[i]:
         default:
-            fmt.Println("OVERLOAD")
             worker.Overload() <- true
         }
 	}

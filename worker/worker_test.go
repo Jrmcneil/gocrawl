@@ -1,7 +1,6 @@
 package worker
 
 import (
-	"fmt"
 	"gocrawl/job"
 	"testing"
 )
@@ -154,7 +153,6 @@ func (job *TestJob) Links() []job.Job {
 }
 
 func (job *TestJob) Ready() chan bool {
-	fmt.Println("READY")
 	job.calls["Ready"] = job.calls["Ready"] + 1
 	return job.ready
 }

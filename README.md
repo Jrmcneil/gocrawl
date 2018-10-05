@@ -20,7 +20,9 @@ To view a sitemap, run the executable with the root url of the site you want to 
 gocrawl -w 15 -q 30 -l 300 http://www.example.com
 ```
 
-for help check ```gocrawl -h```
+For help check ```gocrawl -h```
+
+Run all tests with ```go test ./...```
 
 Tuning
 ----
